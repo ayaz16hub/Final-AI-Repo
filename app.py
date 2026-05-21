@@ -1,3 +1,4 @@
+from fastapi.staticfiles import StaticFiles
 from pdf_generator.make_pdf import make_pdf
 from handwriting.generate_handwriting import generate_handwriting
 from fastapi import FastAPI, UploadFile, File
@@ -7,6 +8,8 @@ import os
 from ocr.extract_text import extract_text
 
 app = FastAPI()
+
+app.mount("/outputs", StaticFiles(directory="outputs"), name="outputs")
 
 UPLOAD_FOLDER = "uploads"
 
@@ -39,6 +42,6 @@ async def upload_file(file: UploadFile = File(...)):
         "message": "Success",
         "filename": file.filename,
         "extracted_text": extracted_text,
-        "handwritten_image": handwritten_image,
-        "pdf_file": pdf_file
+        "image_url": f"https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/handwritten.png"
+        "pdf_url": f"https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/final_output.pdf"
     }
