@@ -42,6 +42,6 @@ async def upload_file(file: UploadFile = File(...)):
         "message": "Success",
         "filename": file.filename,
         "extracted_text": extracted_text,
-        "image_url": f"https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/handwritten.png"
-        "pdf_url": f"https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/final_output.pdf"
+        "image_url": f"https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/handwritten.png",
+        "pdf_url": f"https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/final_output.pdf",
     }
