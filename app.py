@@ -24,24 +24,49 @@ def home():
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
 
-    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    try:
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        file_path = os.path.join(
+            UPLOAD_FOLDER,
+            file.filename
+        )
 
-    # OCR extraction
-    extracted_text = extract_text(file_path)
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-    # Generate handwriting image
-    handwritten_image = generate_handwriting(extracted_text)
+        print("FILE SAVED")
 
-    # Generate PDF
-    pdf_file = make_pdf(handwritten_image)
+        extracted_text = extract_text(file_path)
 
-    return {
-        "message": "Success",
-        "filename": file.filename,
-        "extracted_text": extracted_text,
-        "image_url": f"https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/handwritten.png",
-        "pdf_url": f"https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/final_output.pdf",
-    }
+        print("OCR DONE")
+
+        handwritten_image = generate_handwriting(
+            extracted_text
+        )
+
+        print("HANDWRITING DONE")
+
+        pdf_file = make_pdf(handwritten_image)
+
+        print("PDF DONE")
+
+        return {
+
+            "message": "Success",
+
+            "extracted_text": extracted_text,
+
+            "image_url":
+            "https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/handwritten.png",
+
+            "pdf_url":
+            "https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/final_output.pdf"
+        }
+
+    except Exception as e:
+
+        print("ERROR:", str(e))
+
+        return {
+            "error": str(e)
+        }
