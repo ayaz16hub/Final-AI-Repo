@@ -1,9 +1,14 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+import shutil
+import os
+
+from ocr import extract_text
+
 app = FastAPI()
 
-# فلٹر ایپ کے کنکشن کے لیے CORS اوپن کرنا
+# CORS settings for Flutter connection
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,30 +19,31 @@ app.add_middleware(
 
 @app.get("/")
 def home():
-    return {"message": "AI Handwriting Backend is Running Successfully!"}
+    return {"message": "Backend Running"}
 
 @app.post("/upload")
-async def upload_image(file: UploadFile = File(...)):
-    # 1. فائل ٹائپ کو بالکل سیفلی چیک کریں
+async def upload_file(file: UploadFile = File(...)):
     if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="اپلوڈ کی گئی فائل امیج نہیں ہے۔")
+        raise HTTPException(status_code=400, detail="Uploaded file is not an image.")
 
+    # Temporarily save image for EasyOCR to read
+    temp_path = f"temp_{file.filename}"
     try:
-        # 🟢 کوئی عارضی فائل ہارڈ ڈسک پر نہیں بنے گی! 
-        # ڈائریکٹ ریم (Memory) سے بائٹس ریڈ کرنا تاکہ پرمیشن ایرر نہ آئے
-        file_bytes = await file.read()
+        with open(temp_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
         
-        if not file_bytes:
-            raise HTTPException(status_code=400, detail="فائل کا ڈیٹا خالی ہے۔")
-
-        # ٹیسٹ آؤٹ پٹ جو فلٹر اسکرین پر لازمی دکھنا چاہیے
+        # EasyOCR function call
+        extracted_text = extract_text(temp_path)
+        
         return {
             "success": True,
-            "extracted_text": "مبارک ہو! لائیو سرور نے بغیر کسی لوکل فائل کے ڈیٹا ریم میں پڑھ لیا ہے۔",
+            "extracted_text": extracted_text,
             "image_url": "https://via.placeholder.com/150",
             "pdf_url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
         }
-
     except Exception as e:
-        # اگر کوئی بھی اندرونی مسئلہ آئے گا تو وہ یہاں سے فلٹر کو صاف نظر آئے گا
-        raise HTTPException(status_code=500, detail=f"بیک اینڈ پروسیسنگ ایرر: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        # Delete temp file after processing
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
