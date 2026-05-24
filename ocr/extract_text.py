@@ -6,10 +6,12 @@ os.environ["EASYOCR_MODULE_PATH"] = os.path.join(
     ".EasyOCR"
 )
 
-reader = easyocr.Reader(['en'], gpu=False)
-
 def extract_text(image_path):
+
     try:
+
+        reader = easyocr.Reader(['en'], gpu=False)
+
         results = reader.readtext(image_path)
 
         text = ""
