@@ -36,19 +36,15 @@ def home():
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
     try:
-        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        file_path = f"uploads/{file.filename}"
 
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-
-        # optional processing
-        text = extract_text(file_path)
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
 
         return {
-            "status": "success",
-            "filename": file.filename,
-            "text": text
+            "status": "file saved",
+            "path": file_path
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"error": str(e)}
