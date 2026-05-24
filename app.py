@@ -56,8 +56,8 @@ async def upload_file(file: UploadFile = File(...)):
         return {
             "success": True,
             "extracted_text": extracted_text,
-            "image_url": "https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/handwritten.png",
-            "pdf_url": "https://final-ai-handwriitng-caligraphy-backend.onrender.com/outputs/final_output.pdf"
+            "image_url": "https://final-ai-repo-1.onrender.com/outputs/handwritten.png",
+            "pdf_url": "https://final-ai-repo-1.onrender.com/outputs/final_output.pdf"
         }
 
     except Exception as e:
