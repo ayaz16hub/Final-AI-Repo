@@ -34,31 +34,11 @@ def home():
     return {"message": "Backend Running"}
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
-
+def upload():
     try:
-
-        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-
-        # save uploaded file
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-
-        # OCR
-        extracted_text = extract_text(file_path)
-
-        # handwriting image
-        handwritten_image_path = generate_handwriting(extracted_text)
-
-        # pdf generation
-        pdf_path = make_pdf(handwritten_image_path)
-
-        return {
-            "success": True,
-            "extracted_text": extracted_text,
-            "image_url": "https://final-ai-repo-1.onrender.com/outputs/handwritten.png",
-            "pdf_url": "https://final-ai-repo-1.onrender.com/outputs/final_output.pdf"
-        }
+        return {"status": "received"}
+    except Exception as e:
+        return {"error": str(e)}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
