@@ -13,8 +13,13 @@ def generate_handwriting(text):
     draw = ImageDraw.Draw(img)
 
     # Fonts
-    font = ImageFont.truetype("fonts/handwriting.ttf", 32)
-    header_font = ImageFont.truetype("fonts/handwriting.ttf", 24)
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    font_path = os.path.join(BASE_DIR, "fonts", "handwriting.ttf")
+
+    font = ImageFont.truetype(font_path, 32)
+
+    header_font = ImageFont.truetype(font_path, 24)
 
     # Date + Day
     now = datetime.now()
