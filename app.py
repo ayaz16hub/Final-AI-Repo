@@ -34,11 +34,21 @@ def home():
     return {"message": "Backend Running"}
 
 @app.post("/upload")
-def upload():
+async def upload(file: UploadFile = File(...)):
     try:
-        return {"status": "received"}
-    except Exception as e:
-        return {"error": str(e)}
+        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # optional processing
+        text = extract_text(file_path)
+
+        return {
+            "status": "success",
+            "filename": file.filename,
+            "text": text
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
